@@ -14,6 +14,7 @@ const {
   isCockroachDB,
   isPostgreSQL,
   isBetterSQLite3,
+  isSQLJS,
 } = require('../../util/db-helpers');
 const { getAllDbs, getKnexForDb } = require('../util/knex-instance-provider');
 const logger = require('../../integration/logger');
@@ -1546,7 +1547,7 @@ describe('Schema (misc)', () => {
             }));
 
         it('test boolean type with sqlite3 and better sqlite3 #4955', async function () {
-          if (!isSQLite(knex)) {
+          if (!isSQLite(knex) && !isSQLJS(knex)) {
             this.skip();
           }
           await knex.schema
@@ -1615,7 +1616,8 @@ describe('Schema (misc)', () => {
             isRedshift(knex) ||
             isMssql(knex) ||
             isOracle(knex) ||
-            isCockroachDB(knex)
+            isCockroachDB(knex) ||
+            isSQLJS(knex)
           ) {
             return;
           }
@@ -1693,7 +1695,7 @@ describe('Schema (misc)', () => {
 
         describe('supports partial indexes - postgres, sqlite, and mssql', function () {
           it('allows creating indexes with predicate', async function () {
-            if (!(isPostgreSQL(knex) || isMssql(knex) || isSQLite(knex))) {
+            if (!(isPostgreSQL(knex) || isMssql(knex) || isSQLite(knex) || isSQLJS(knex))) {
               return this.skip();
             }
 
@@ -1730,7 +1732,7 @@ describe('Schema (misc)', () => {
 
         describe('supports partial unique indexes - postgres, sqlite, and mssql', function () {
           it('allows creating a unique index with predicate', async function () {
-            if (!(isPostgreSQL(knex) || isMssql(knex) || isSQLite(knex))) {
+            if (!(isPostgreSQL(knex) || isMssql(knex) || isSQLite(knex) || isSQLJS(knex))) {
               return this.skip();
             }
 
@@ -1784,7 +1786,7 @@ describe('Schema (misc)', () => {
 
         describe('sqlite only', () => {
           it('should not parse table name if wrapIdentifier is not specified', async function () {
-            if (!isSQLite(knex)) {
+            if (!isSQLite(knex) && !isSQLJS(knex)) {
               return this.skip();
             }
 
@@ -1795,7 +1797,7 @@ describe('Schema (misc)', () => {
           });
 
           it('should parse table name if wrapIdentifier is specified', async function () {
-            if (!isSQLite(knex)) {
+            if (!isSQLite(knex) && !isSQLJS(knex)) {
               return this.skip();
             }
 
@@ -1833,7 +1835,7 @@ describe('Schema (misc)', () => {
 
           describe('sqlite and mysql only', () => {
             it('checks whether a column exists without being case sensitive, resolving with a boolean', async function () {
-              if (!isSQLite(knex) && !isMysql(knex)) {
+              if (!isSQLite(knex) && !isMysql(knex) && !isSQLJS(knex)) {
                 return this.skip();
               }
 
@@ -1860,7 +1862,7 @@ describe('Schema (misc)', () => {
             });
 
             it('checks whether a column exists, resolving with a boolean', async function () {
-              if (!isSQLite(knex) && !isPgBased(knex)) {
+              if (!isSQLite(knex) && !isPgBased(knex) && !isSQLJS(knex)) {
                 return this.skip();
               }
 
@@ -2072,7 +2074,7 @@ describe('Schema (misc)', () => {
               );
               const autoinc = !!res[0].ident;
               expect(autoinc).to.equal(true);
-            } else if (isSQLite(knex)) {
+            } else if (isSQLite(knex) || isSQLJS(knex)) {
               const res = await knex.raw(
                 `SELECT "is-autoincrement" as ident
                        FROM sqlite_master
@@ -2087,7 +2089,7 @@ describe('Schema (misc)', () => {
       });
 
       describe('dropColumn', () => {
-        if (isSQLite(knex)) {
+        if (isSQLite(knex) || isSQLJS(knex)) {
           describe('using wrapIdentifier and postProcessResponse', () => {
             const tableName = 'processor_drop_column_test';
 
@@ -2379,7 +2381,7 @@ describe('Schema (misc)', () => {
 
       //Unit tests checks SQL -- This will test running those queries, no hard assertions here.
       it('#1430 - .primary() & .dropPrimary() same for all dialects', async function () {
-        if (isSQLite(knex)) {
+        if (isSQLite(knex) || isSQLJS(knex)) {
           return this.skip();
         }
         const constraintName = 'testconstraintname';
@@ -2413,7 +2415,7 @@ describe('Schema (misc)', () => {
           after(() => knex.schema.dropTable(tableName));
 
           it('should return empty resultset when referencing an existent column', function () {
-            if (!isSQLite(knex)) {
+            if (!isSQLite(knex) && !isSQLJS(knex)) {
               return this.skip();
             }
 
@@ -2425,8 +2427,8 @@ describe('Schema (misc)', () => {
               });
           });
 
-          it('should throw when referencing a non-existent column', function () {
-            if (!isSQLite(knex)) {
+          it.only('should throw when referencing a non-existent column', function () {
+            if (!isSQLite(knex) && !isSQLJS(knex)) {
               return this.skip();
             }
 
@@ -2445,7 +2447,7 @@ describe('Schema (misc)', () => {
 
       describe('sqlite ddl', () => {
         before(async () => {
-          if (!isSQLite(knex)) {
+          if (!isSQLite(knex) && !isSQLJS(knex)) {
             return;
           }
 
@@ -2458,7 +2460,7 @@ describe('Schema (misc)', () => {
         });
 
         after(async () => {
-          if (!isSQLite(knex)) {
+          if (!isSQLite(knex) && !isSQLJS(knex)) {
             return;
           }
 
@@ -2466,7 +2468,7 @@ describe('Schema (misc)', () => {
         });
 
         it('properly executes any ddl command when the table name is a substring of "CREATE TABLE"', async () => {
-          if (!isSQLite(knex)) {
+          if (!isSQLite(knex) && !isSQLJS(knex)) {
             return;
           }
 
@@ -2579,7 +2581,7 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (isSQLite(knex)) {
+              if (isSQLite(knex) || isSQLJS(knex)) {
                 //For SQLite inspect metadata to make sure the constraint exists
                 const expectedRes = [
                   {

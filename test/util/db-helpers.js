@@ -52,7 +52,7 @@ function isRedshift(knex) {
 }
 
 function isSQLite(knex) {
-  return getDriverName(knex) === drivers.SQLite || isBetterSQLite3(knex) || isSQLJS(knex);
+  return getDriverName(knex) === drivers.SQLite || isBetterSQLite3(knex);
 }
 
 function isSQLJS(knex) {
