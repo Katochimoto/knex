@@ -21,6 +21,7 @@ module.exports = function (knex) {
             1
           );
           tester('sqlite3', 'delete from `accounts` where `id` = ?', [1], 1);
+          tester('sqljs', 'delete from `accounts` where `id` = ?', [1], 1);
           tester('oracledb', 'delete from "accounts" where "id" = ?', [1], 1);
           tester(
             'mssql',
@@ -63,6 +64,7 @@ module.exports = function (knex) {
             1
           );
           tester('sqlite3', 'delete from `accounts` where `id` = ?', [2], 1);
+          tester('sqljs', 'delete from `accounts` where `id` = ?', [2], 1);
           tester('oracledb', 'delete from "accounts" where "id" = ?', [2], 1);
           tester(
             'mssql',

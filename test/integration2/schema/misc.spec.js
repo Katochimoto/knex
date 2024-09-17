@@ -229,7 +229,7 @@ describe('Schema (misc)', () => {
                   ['drop table if exists "test_foreign_table_two"']
                 );
                 tester(
-                  ['sqlite3', 'mysql'],
+                  ['sqlite3', 'sqljs', 'mysql'],
                   ['drop table if exists `test_foreign_table_two`']
                 );
                 tester('oracledb', [
@@ -306,6 +306,9 @@ describe('Schema (misc)', () => {
                 tester('sqlite3', [
                   'create table `table_copied` as select * from `table_to_copy` where 0=1',
                 ]);
+                tester('sqljs', [
+                  'create table `table_copied` as select * from `table_to_copy` where 0=1',
+                ]);
                 tester('oracledb', [
                   'create table "table_copied" as (select * from "table_to_copy" where 0=1)',
                 ]);
@@ -351,6 +354,11 @@ describe('Schema (misc)', () => {
                   'alter table "table_copied" add column "add_num_col" integer',
                 ]);
                 tester('sqlite3', [
+                  'create table `table_copied` as select * from `table_to_copy` where 0=1',
+                  'alter table `table_copied` add column `add_col` text',
+                  'alter table `table_copied` add column `add_num_col` integer',
+                ]);
+                tester('sqljs', [
                   'create table `table_copied` as select * from `table_to_copy` where 0=1',
                   'alter table `table_copied` add column `add_col` text',
                   'alter table `table_copied` add column `add_num_col` integer',
@@ -783,6 +791,12 @@ describe('Schema (misc)', () => {
                 'create unique index `test_table_one_email_unique` on `test_table_one` (`email`)',
                 'create index `test_table_one_logins_index` on `test_table_one` (`logins`)',
               ]);
+              tester('sqljs', [
+                "create table `test_table_one` (`id` integer not null primary key autoincrement, `first_name` varchar(255), `last_name` varchar(255), `email` varchar(255) null, `logins` integer default '1', `balance` float default '0', `about` text, `created_at` datetime, `updated_at` datetime)",
+                'create index `test_table_one_first_name_index` on `test_table_one` (`first_name`)',
+                'create unique index `test_table_one_email_unique` on `test_table_one` (`email`)',
+                'create index `test_table_one_logins_index` on `test_table_one` (`logins`)',
+              ]);
               tester('oracledb', [
                 `create table "test_table_one" ("id" number(20, 0) not null primary key, "first_name" varchar2(255), "last_name" varchar2(255), "email" varchar2(255) null, "logins" integer default '1', "balance" float default '0', "about" varchar2(4000), "created_at" timestamp with local time zone, "updated_at" timestamp with local time zone)`,
                 'comment on table "test_table_one" is \'A table comment.\'',
@@ -828,6 +842,9 @@ describe('Schema (misc)', () => {
                 'create table "test_table_timestamp" ("id" bigint identity(1,1) primary key not null, "createdAt" timestamptz not null default CURRENT_TIMESTAMP, "updatedAt" timestamptz not null default CURRENT_TIMESTAMP)',
               ]);
               tester('sqlite3', [
+                'create table `test_table_timestamp` (`id` integer not null primary key autoincrement, `createdAt` datetime not null default CURRENT_TIMESTAMP, `updatedAt` datetime not null default CURRENT_TIMESTAMP)',
+              ]);
+              tester('sqljs', [
                 'create table `test_table_timestamp` (`id` integer not null primary key autoincrement, `createdAt` datetime not null default CURRENT_TIMESTAMP, `updatedAt` datetime not null default CURRENT_TIMESTAMP)',
               ]);
               tester('oracledb', [
@@ -901,6 +918,9 @@ describe('Schema (misc)', () => {
               tester('sqlite3', [
                 "create table `test_table_three` (`main` integer not null, `paragraph` text default 'Lorem ipsum Qui quis qui in.', `metadata` json default '{\"a\":10}', primary key (`main`))",
               ]);
+              tester('sqljs', [
+                "create table `test_table_three` (`main` integer not null, `paragraph` text default 'Lorem ipsum Qui quis qui in.', `metadata` json default '{\"a\":10}', primary key (`main`))",
+              ]);
               tester('oracledb', [
                 'create table "test_table_three" ("main" integer not null, "paragraph" clob default \'Lorem ipsum Qui quis qui in.\', "metadata" clob default \'{"a":10}\')',
                 'alter table "test_table_three" add constraint "test_table_three_pkey" primary key ("main")',
@@ -960,6 +980,9 @@ describe('Schema (misc)', () => {
               tester('sqlite3', [
                 'create table `test_table_numerics` (`integer_column` integer, `tinyint_column` tinyint, `smallint_column` integer, `mediumint_column` integer, `bigint_column` bigint)',
               ]);
+              tester('sqljs', [
+                'create table `test_table_numerics` (`integer_column` integer, `tinyint_column` tinyint, `smallint_column` integer, `mediumint_column` integer, `bigint_column` bigint)',
+              ]);
               tester('mssql', [
                 'CREATE TABLE [test_table_numerics] ([integer_column] int, [tinyint_column] tinyint, [smallint_column] smallint, [mediumint_column] int, [bigint_column] bigint)',
               ]);
@@ -984,6 +1007,9 @@ describe('Schema (misc)', () => {
                 ]
               );
               tester('sqlite3', [
+                "create table `datatype_test` (`enum_value` text check (`enum_value` in ('a', 'b', 'c')), `uuid` char(36) not null)",
+              ]);
+              tester('sqljs', [
                 "create table `datatype_test` (`enum_value` text check (`enum_value` in ('a', 'b', 'c')), `uuid` char(36) not null)",
               ]);
               tester('oracledb', [
@@ -1077,6 +1103,20 @@ describe('Schema (misc)', () => {
                 }
               );
               tester('sqlite3', 'PRAGMA table_info(`datatype_test`)', [], {
+                enum_value: {
+                  defaultValue: null,
+                  maxLength: null,
+                  nullable: true,
+                  type: 'text',
+                },
+                uuid: {
+                  defaultValue: null,
+                  maxLength: '36',
+                  nullable: false,
+                  type: 'char',
+                },
+              });
+              tester('sqljs', 'PRAGMA table_info(`datatype_test`)', [], {
                 enum_value: {
                   defaultValue: null,
                   maxLength: null,
@@ -1185,6 +1225,12 @@ describe('Schema (misc)', () => {
                 nullable: false,
                 type: 'char',
               });
+              tester('sqljs', 'PRAGMA table_info(`datatype_test`)', [], {
+                defaultValue: null,
+                maxLength: '36',
+                nullable: false,
+                type: 'char',
+              });
               tester(
                 'oracledb',
                 "select * from xmltable( '/ROWSET/ROW'\n      passing dbms_xmlgen.getXMLType('\n      select char_col_decl_length, column_name, data_type, data_default, nullable\n      from all_tab_columns where table_name = ''datatype_test'' ')\n      columns\n      CHAR_COL_DECL_LENGTH number, COLUMN_NAME varchar2(200), DATA_TYPE varchar2(106),\n      DATA_DEFAULT clob, NULLABLE varchar2(1))",
@@ -1253,6 +1299,12 @@ describe('Schema (misc)', () => {
                 'alter table "test_foreign_table_two" add constraint "fk_fkey_four" foreign key ("fkey_four") references "test_table_two" ("id")',
               ]);
               tester('sqlite3', [
+                'create table `test_foreign_table_two` (`id` integer not null primary key autoincrement, `fkey_two` integer, `fkey_three` integer, `fkey_four` integer, ' +
+                  'foreign key(`fkey_two`) references `test_table_two`(`id`), ' +
+                  'constraint `fk_fkey_three` foreign key(`fkey_three`) references `test_table_two`(`id`), ' +
+                  'constraint `fk_fkey_four` foreign key(`fkey_four`) references `test_table_two`(`id`))',
+              ]);
+              tester('sqljs', [
                 'create table `test_foreign_table_two` (`id` integer not null primary key autoincrement, `fkey_two` integer, `fkey_three` integer, `fkey_four` integer, ' +
                   'foreign key(`fkey_two`) references `test_table_two`(`id`), ' +
                   'constraint `fk_fkey_three` foreign key(`fkey_three`) references `test_table_two`(`id`), ' +
@@ -1328,6 +1380,10 @@ describe('Schema (misc)', () => {
                 'create table `composite_key_test` (`column_a` integer, `column_b` integer, `details` text, `status` tinyint)',
                 'create unique index `composite_key_test_column_a_column_b_unique` on `composite_key_test` (`column_a`, `column_b`)',
               ]);
+              tester('sqljs', [
+                'create table `composite_key_test` (`column_a` integer, `column_b` integer, `details` text, `status` tinyint)',
+                'create unique index `composite_key_test_column_a_column_b_unique` on `composite_key_test` (`column_a`, `column_b`)',
+              ]);
               tester('oracledb', [
                 'create table "composite_key_test" ("column_a" integer, "column_b" integer, "details" clob, "status" smallint)',
                 'alter table "composite_key_test" add constraint "composite_key_test_column_a_column_b_unique" unique ("column_a", "column_b")',
@@ -1389,6 +1445,9 @@ describe('Schema (misc)', () => {
               tester('sqlite3', [
                 'create table `charset_collate_test` (`id` integer not null primary key autoincrement, `account_id` integer, `details` text, `status` tinyint)',
               ]);
+              tester('sqljs', [
+                'create table `charset_collate_test` (`id` integer not null primary key autoincrement, `account_id` integer, `details` text, `status` tinyint)',
+              ]);
               tester('oracledb', [
                 'create table "charset_collate_test" ("id" integer not null primary key, "account_id" integer, "details" clob, "status" smallint)',
                 'DECLARE PK_NAME VARCHAR(200); BEGIN  EXECUTE IMMEDIATE (\'CREATE SEQUENCE "charset_collate_test_seq"\');  SELECT cols.column_name INTO PK_NAME  FROM all_constraints cons, all_cons_columns cols  WHERE cons.constraint_type = \'P\'  AND cons.constraint_name = cols.constraint_name  AND cons.owner = cols.owner  AND cols.table_name = \'charset_collate_test\';  execute immediate (\'create or replace trigger "charset_collate_test_autoinc_trg"  BEFORE INSERT on "charset_collate_test"  for each row  declare  checking number := 1;  begin    if (:new."\' || PK_NAME || \'" is null) then      while checking >= 1 loop        select "charset_collate_test_seq".nextval into :new."\' || PK_NAME || \'" from dual;        select count("\' || PK_NAME || \'") into checking from "charset_collate_test"        where "\' || PK_NAME || \'" = :new."\' || PK_NAME || \'";      end loop;    end if;  end;\'); END;',
@@ -1424,6 +1483,9 @@ describe('Schema (misc)', () => {
                 "create table `bool_test` (`one` boolean, `two` boolean default '0', `three` boolean default '1', `four` boolean default '1', `five` boolean default '0')",
               ]);
               tester('sqlite3', [
+                "create table `bool_test` (`one` boolean, `two` boolean default '0', `three` boolean default '1', `four` boolean default '1', `five` boolean default '0')",
+              ]);
+              tester('sqljs', [
                 "create table `bool_test` (`one` boolean, `two` boolean default '0', `three` boolean default '1', `four` boolean default '1', `five` boolean default '0')",
               ]);
               tester('oracledb', [
@@ -1462,6 +1524,12 @@ describe('Schema (misc)', () => {
                 ]
               );
               tester('sqlite3', [
+                "create table `10_test_table` (`id` integer not null primary key autoincrement, `first_name` varchar(255), `last_name` varchar(255), `email` varchar(255) null, `logins` integer default '1')",
+                'create index `10_test_table_first_name_index` on `10_test_table` (`first_name`)',
+                'create unique index `10_test_table_email_unique` on `10_test_table` (`email`)',
+                'create index `10_test_table_logins_index` on `10_test_table` (`logins`)',
+              ]);
+              tester('sqljs', [
                 "create table `10_test_table` (`id` integer not null primary key autoincrement, `first_name` varchar(255), `last_name` varchar(255), `email` varchar(255) null, `logins` integer default '1')",
                 'create index `10_test_table_first_name_index` on `10_test_table` (`first_name`)',
                 'create unique index `10_test_table_email_unique` on `10_test_table` (`email`)',
@@ -2437,7 +2505,7 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect)) {
+              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
                 //For SQLite inspect metadata to make sure the constraint exists
                 return tr
                   .select('type', 'name', 'tbl_name', 'sql')
@@ -2474,7 +2542,7 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect)) {
+              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
                 //For SQLite inspect metadata to make sure the constraint exists
                 return tr
                   .select('type', 'name', 'tbl_name', 'sql')
@@ -2569,7 +2637,7 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect)) {
+              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
                 //For SQLite inspect metadata to make sure the constraint exists
                 const expectedRes = [
                   {
@@ -2622,7 +2690,7 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect)) {
+              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
                 //For SQLite inspect metadata to make sure the constraint exists
                 const expectedRes = [
                   {
@@ -2721,7 +2789,7 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect)) {
+              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
                 const expectedRes = [
                   {
                     type: 'table',

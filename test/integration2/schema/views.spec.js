@@ -4,7 +4,7 @@ const { expect } = require('chai');
 
 require('lodash');
 
-const { isOracle, isSQLite, isMssql } = require('../../util/db-helpers');
+const { isOracle, isSQLite, isMssql, isSQLJS } = require('../../util/db-helpers');
 const { getAllDbs, getKnexForDb } = require('../util/knex-instance-provider');
 const logger = require('../../integration/logger');
 const { isMysql, isCockroachDB } = require('../../util/db-helpers.js');
@@ -41,7 +41,7 @@ describe('Views', () => {
         afterEach(async () => {
           await knex.schema.dropViewIfExists('view_test');
           await knex.schema.dropViewIfExists('new_view');
-          if (!isMssql(knex) && !isSQLite(knex) && !isMysql(knex)) {
+          if (!isMssql(knex) && !isSQLite(knex) && !isMysql(knex) && !isSQLJS(knex)) {
             await knex.schema.dropMaterializedViewIfExists('mat_view');
           }
           await knex.schema.dropTableIfExists('table_view');
@@ -63,7 +63,7 @@ describe('Views', () => {
                 ]
               );
               tester(
-                ['sqlite3', 'mysql'],
+                ['sqlite3', 'sqljs', 'mysql'],
                 [
                   "create view `view_test` (`a`, `b`) as select `a`, `b` from `table_view` where `b` > '10'",
                 ]
@@ -100,7 +100,7 @@ describe('Views', () => {
                 ]
               );
               tester(
-                ['sqlite3', 'mysql'],
+                ['sqlite3', 'sqljs', 'mysql'],
                 [
                   "create view `view_test` as select `a`, `b` from `table_view` where `b` > '10'",
                 ]
@@ -161,7 +161,7 @@ describe('Views', () => {
                 ]
               );
               tester(
-                ['sqlite3'],
+                ['sqlite3', 'sqljs'],
                 [
                   'drop view if exists `view_test`',
                   "create view `view_test` (`a`, `b`) as select `a`, `b` from `table_view` where `b` > '10'",
@@ -223,7 +223,7 @@ describe('Views', () => {
                 ]
               );
               tester(
-                ['sqlite3'],
+                ['sqlite3', 'sqljs'],
                 [
                   'drop view if exists `view_test`',
                   "create view `view_test` as select `a`, `b` from `table_view` where `b` > '10'",
@@ -247,7 +247,7 @@ describe('Views', () => {
         });
 
         it('create materialized view', async function () {
-          if (isMssql(knex) || isSQLite(knex) || isMysql(knex)) {
+          if (isMssql(knex) || isSQLite(knex) || isMysql(knex) || isSQLJS(knex)) {
             return this.skip();
           }
           await knex.schema
@@ -310,6 +310,7 @@ describe('Views', () => {
           if (
             isOracle(knex) ||
             isSQLite(knex) ||
+            isSQLJS(knex) ||
             isMysql(knex) ||
             isCockroachDB(knex)
           ) {
@@ -336,7 +337,7 @@ describe('Views', () => {
         });
 
         it('alter view rename', async function () {
-          if (isOracle(knex) || isSQLite(knex)) {
+          if (isOracle(knex) || isSQLite(knex) || isSQLJS(knex)) {
             return this.skip();
           }
           await knex.schema.createView('view_test', function (view) {
@@ -359,7 +360,7 @@ describe('Views', () => {
         });
 
         it('create view with check options', async function () {
-          if (isMssql(knex) || isCockroachDB(knex) || isSQLite(knex)) {
+          if (isMssql(knex) || isCockroachDB(knex) || isSQLite(knex) || isSQLJS(knex)) {
             return this.skip();
           }
 
