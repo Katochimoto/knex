@@ -294,7 +294,12 @@ describe('Additional', function () {
         });
 
         it('should return the correct column when a single property is given to returning', async function () {
-          if (!isPostgreSQL(knex) && !isMssql(knex) && !isSQLite(knex) && !isSQLJS(knex)) {
+          if (
+            !isPostgreSQL(knex) &&
+            !isMssql(knex) &&
+            !isSQLite(knex) &&
+            !isSQLJS(knex)
+          ) {
             return this.skip();
           }
 
@@ -309,7 +314,12 @@ describe('Additional', function () {
         });
 
         it('should return the correct columns when multiple properties are given to returning', async function () {
-          if (!isPostgreSQL(knex) && !isMssql(knex) && !isSQLite(knex) && !isSQLJS(knex)) {
+          if (
+            !isPostgreSQL(knex) &&
+            !isMssql(knex) &&
+            !isSQLite(knex) &&
+            !isSQLJS(knex)
+          ) {
             return this.skip();
           }
 

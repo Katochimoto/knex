@@ -1695,7 +1695,14 @@ describe('Schema (misc)', () => {
 
         describe('supports partial indexes - postgres, sqlite, and mssql', function () {
           it('allows creating indexes with predicate', async function () {
-            if (!(isPostgreSQL(knex) || isMssql(knex) || isSQLite(knex) || isSQLJS(knex))) {
+            if (
+              !(
+                isPostgreSQL(knex) ||
+                isMssql(knex) ||
+                isSQLite(knex) ||
+                isSQLJS(knex)
+              )
+            ) {
               return this.skip();
             }
 
@@ -1732,7 +1739,14 @@ describe('Schema (misc)', () => {
 
         describe('supports partial unique indexes - postgres, sqlite, and mssql', function () {
           it('allows creating a unique index with predicate', async function () {
-            if (!(isPostgreSQL(knex) || isMssql(knex) || isSQLite(knex) || isSQLJS(knex))) {
+            if (
+              !(
+                isPostgreSQL(knex) ||
+                isMssql(knex) ||
+                isSQLite(knex) ||
+                isSQLJS(knex)
+              )
+            ) {
               return this.skip();
             }
 
@@ -2455,7 +2469,9 @@ describe('Schema (misc)', () => {
                 throw new Error('should have failed');
               })
               .catch((err) => {
-                expect(err.message).to.equal('select * from `invalid_field_test_sqlite3` where `field_foofoo` = \'something\' - no such column: field_foofoo');
+                expect(err.message).to.equal(
+                  "select * from `invalid_field_test_sqlite3` where `field_foofoo` = 'something' - no such column: field_foofoo"
+                );
               });
           });
         });
@@ -2523,7 +2539,10 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
+              if (
+                /sqlite/i.test(knex.client.dialect) ||
+                /sqljs/i.test(knex.client.dialect)
+              ) {
                 //For SQLite inspect metadata to make sure the constraint exists
                 return tr
                   .select('type', 'name', 'tbl_name', 'sql')
@@ -2560,7 +2579,10 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
+              if (
+                /sqlite/i.test(knex.client.dialect) ||
+                /sqljs/i.test(knex.client.dialect)
+              ) {
                 //For SQLite inspect metadata to make sure the constraint exists
                 return tr
                   .select('type', 'name', 'tbl_name', 'sql')
@@ -2655,7 +2677,10 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
+              if (
+                /sqlite/i.test(knex.client.dialect) ||
+                /sqljs/i.test(knex.client.dialect)
+              ) {
                 //For SQLite inspect metadata to make sure the constraint exists
                 const expectedRes = [
                   {
@@ -2708,7 +2733,10 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
+              if (
+                /sqlite/i.test(knex.client.dialect) ||
+                /sqljs/i.test(knex.client.dialect)
+              ) {
                 //For SQLite inspect metadata to make sure the constraint exists
                 const expectedRes = [
                   {
@@ -2807,7 +2835,10 @@ describe('Schema (misc)', () => {
               })
             )
             .then(() => {
-              if (/sqlite/i.test(knex.client.dialect) || /sqljs/i.test(knex.client.dialect)) {
+              if (
+                /sqlite/i.test(knex.client.dialect) ||
+                /sqljs/i.test(knex.client.dialect)
+              ) {
                 const expectedRes = [
                   {
                     type: 'table',

@@ -144,9 +144,7 @@ describe('SQLJS SchemaBuilder', function () {
           .schemaBuilder()
           .createView('adults', function (view) {
             view.columns(['name']);
-            view.as(
-              knexSQLJS('users').select('name').where('age', '>', '18')
-            );
+            view.as(knexSQLJS('users').select('name').where('age', '>', '18'));
             view.localCheckOption();
           })
           .toSQL();
@@ -197,9 +195,7 @@ describe('SQLJS SchemaBuilder', function () {
           .schemaBuilder()
           .createMaterializedView('mat_view', function (view) {
             view.columns(['name']);
-            view.as(
-              knexSQLJS('users').select('name').where('age', '>', '18')
-            );
+            view.as(knexSQLJS('users').select('name').where('age', '>', '18'));
           })
           .toSQL();
       }).to.throw('materialized views are not supported by this dialect.');

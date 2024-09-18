@@ -602,10 +602,11 @@ describe('Updates', function () {
               'update "testing" set "one" = ? where "id" = ?',
               ['{"one":123,"two":456}', 1]
             );
-            tester(['sqlite3', 'sqljs'], 'update `testing` set `one` = ? where `id` = ?', [
-              '{"one":123,"two":456}',
-              1,
-            ]);
+            tester(
+              ['sqlite3', 'sqljs'],
+              'update `testing` set `one` = ? where `id` = ?',
+              ['{"one":123,"two":456}', 1]
+            );
             tester('mysql', 'update `testing` set `one` = ? where `id` = ?', [
               '{"one":123,"two":456}',
               1,

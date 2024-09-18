@@ -1132,7 +1132,12 @@ describe('Selects', function () {
 
       it('select for share prevents updating in other transaction', async function () {
         // Query cancellation is not yet implemented for CockroachDB
-        if (isSQLite(knex) || isSQLJS(knex) || isOracle(knex) || isCockroachDB(knex)) {
+        if (
+          isSQLite(knex) ||
+          isSQLJS(knex) ||
+          isOracle(knex) ||
+          isCockroachDB(knex)
+        ) {
           return this.skip();
         }
         await knex('test_default_table').insert({
