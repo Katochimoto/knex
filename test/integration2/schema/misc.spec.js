@@ -2427,8 +2427,8 @@ describe('Schema (misc)', () => {
               });
           });
 
-          it.only('should throw when referencing a non-existent column', function () {
-            if (!isSQLite(knex) && !isSQLJS(knex)) {
+          it('should throw when referencing a non-existent column', function () {
+            if (!isSQLite(knex)) {
               return this.skip();
             }
 
@@ -2440,6 +2440,22 @@ describe('Schema (misc)', () => {
               })
               .catch((err) => {
                 expect(err.code).to.equal('SQLITE_ERROR');
+              });
+          });
+
+          it('should throw when referencing a non-existent column for SQLJS', function () {
+            if (!isSQLJS(knex)) {
+              return this.skip();
+            }
+
+            return knex(tableName)
+              .select()
+              .where(fieldName + 'foo', 'something')
+              .then(() => {
+                throw new Error('should have failed');
+              })
+              .catch((err) => {
+                expect(err.message).to.equal('select * from `invalid_field_test_sqlite3` where `field_foofoo` = \'something\' - no such column: field_foofoo');
               });
           });
         });

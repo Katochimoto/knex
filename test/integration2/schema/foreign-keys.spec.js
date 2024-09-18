@@ -205,9 +205,13 @@ describe('Schema', () => {
                 expect(err.message).to.equal(
                   `insert into \`foreign_keys_table_one\` (\`fkey_three\`, \`fkey_two\`) values (99, 9999) - FOREIGN KEY constraint failed`
                 );
-              } else if (isSQLite(knex) || isSQLJS(knex)) {
+              } else if (isSQLite(knex)) {
                 expect(err.message).to.equal(
                   `insert into \`foreign_keys_table_one\` (\`fkey_three\`, \`fkey_two\`) values (99, 9999) - SQLITE_CONSTRAINT: FOREIGN KEY constraint failed`
+                );
+              } else if (isSQLJS(knex)) {
+                expect(err.message).to.equal(
+                  `insert into \`foreign_keys_table_one\` (\`fkey_three\`, \`fkey_two\`) values (99, 9999) - FOREIGN KEY constraint failed`
                 );
               }
               if (isPostgreSQL(knex)) {
@@ -365,9 +369,13 @@ describe('Schema', () => {
                   expect(err.message).to.equal(
                     `insert into \`foreign_keys_table_one\` (\`fkey_four_part1\`, \`fkey_four_part2\`, \`fkey_three\`, \`fkey_two\`) values ('a', 'b', 99, 9999) - FOREIGN KEY constraint failed`
                   );
-                } else if (isSQLite(knex) || isSQLJS(knex)) {
+                } else if (isSQLite(knex)) {
                   expect(err.message).to.equal(
                     `insert into \`foreign_keys_table_one\` (\`fkey_four_part1\`, \`fkey_four_part2\`, \`fkey_three\`, \`fkey_two\`) values ('a', 'b', 99, 9999) - SQLITE_CONSTRAINT: FOREIGN KEY constraint failed`
+                  );
+                } else if (isSQLJS(knex)) {
+                  expect(err.message).to.equal(
+                    `insert into \`foreign_keys_table_one\` (\`fkey_four_part1\`, \`fkey_four_part2\`, \`fkey_three\`, \`fkey_two\`) values ('a', 'b', 99, 9999) - FOREIGN KEY constraint failed`
                   );
                 }
                 if (isPostgreSQL(knex)) {
