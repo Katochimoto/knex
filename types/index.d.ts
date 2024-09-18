@@ -2761,6 +2761,7 @@ declare namespace Knex {
     | PgConnectionConfig
     | RedshiftConnectionConfig
     | Sqlite3ConnectionConfig
+    | SqljsConnectionConfig
     | BetterSqlite3ConnectionConfig
     | SocketConnectionConfig;
 
@@ -3072,6 +3073,13 @@ declare namespace Knex {
   interface Sqlite3ConnectionConfig {
     filename: string;
     flags?: string[];
+    debug?: boolean;
+    expirationChecker?(): boolean;
+  }
+
+  /** Used with SQLJS adapter */
+  interface SqljsConnectionConfig {
+    bytes?: Uint8Array;
     debug?: boolean;
     expirationChecker?(): boolean;
   }
